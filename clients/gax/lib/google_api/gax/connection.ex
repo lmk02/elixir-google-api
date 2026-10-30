@@ -33,7 +33,7 @@ defmodule GoogleApi.Gax.Connection do
         )
       )
 
-      plug(Tesla.Middleware.DecompressResponse, [])
+      plug(Tesla.Middleware.DecompressResponse, max_body_size: :infinity)
 
       plug(Tesla.Middleware.EncodeJson, engine: Poison)
 
@@ -182,7 +182,7 @@ defmodule GoogleApi.Gax.Connection do
       nil -> body
       _   -> Tesla.Multipart.add_field(
         body,
-        :metadata,
+        "metadata",
         Poison.encode!(meta),
         headers: [{:"Content-Type", "application/json"}]
       )
@@ -193,7 +193,7 @@ defmodule GoogleApi.Gax.Connection do
         {res, type} = try_encode_multipart_field(data, meta)
         Tesla.Multipart.add_field(
           b,
-          body_name,
+          to_string(body_name),
           res,
           headers: [{:"Content-Type", type}]
         )
